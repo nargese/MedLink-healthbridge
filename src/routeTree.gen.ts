@@ -15,6 +15,10 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedEspaceRouteImport } from './routes/_authenticated/espace'
 import { Route as AuthenticatedMfaRouteImport } from './routes/_authenticated/mfa'
+import { Route as AuthenticatedPatientRouteImport } from './routes/_authenticated/patient'
+import { Route as AuthenticatedPraticienRouteImport } from './routes/_authenticated/praticien'
+import { Route as AuthenticatedRendezVousRouteImport } from './routes/_authenticated/rendez-vous'
+import { Route as AuthenticatedDossierPatientIdRouteImport } from './routes/_authenticated/dossier.$patientId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -45,6 +49,27 @@ const AuthenticatedMfaRoute = AuthenticatedMfaRouteImport.update({
   path: '/mfa',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPatientRoute = AuthenticatedPatientRouteImport.update({
+  id: '/patient',
+  path: '/patient',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPraticienRoute = AuthenticatedPraticienRouteImport.update({
+  id: '/praticien',
+  path: '/praticien',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRendezVousRoute = AuthenticatedRendezVousRouteImport.update({
+  id: '/rendez-vous',
+  path: '/rendez-vous',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDossierPatientIdRoute =
+  AuthenticatedDossierPatientIdRouteImport.update({
+    id: '/dossier/$patientId',
+    path: '/dossier/$patientId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -52,6 +77,10 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/espace': typeof AuthenticatedEspaceRoute
   '/mfa': typeof AuthenticatedMfaRoute
+  '/patient': typeof AuthenticatedPatientRoute
+  '/praticien': typeof AuthenticatedPraticienRoute
+  '/rendez-vous': typeof AuthenticatedRendezVousRoute
+  '/dossier/$patientId': typeof AuthenticatedDossierPatientIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -59,6 +88,10 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/espace': typeof AuthenticatedEspaceRoute
   '/mfa': typeof AuthenticatedMfaRoute
+  '/patient': typeof AuthenticatedPatientRoute
+  '/praticien': typeof AuthenticatedPraticienRoute
+  '/rendez-vous': typeof AuthenticatedRendezVousRoute
+  '/dossier/$patientId': typeof AuthenticatedDossierPatientIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -68,12 +101,34 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/espace': typeof AuthenticatedEspaceRoute
   '/_authenticated/mfa': typeof AuthenticatedMfaRoute
+  '/_authenticated/patient': typeof AuthenticatedPatientRoute
+  '/_authenticated/praticien': typeof AuthenticatedPraticienRoute
+  '/_authenticated/rendez-vous': typeof AuthenticatedRendezVousRoute
+  '/_authenticated/dossier/$patientId': typeof AuthenticatedDossierPatientIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/reset-password' | '/espace' | '/mfa'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/reset-password'
+    | '/espace'
+    | '/mfa'
+    | '/patient'
+    | '/praticien'
+    | '/rendez-vous'
+    | '/dossier/$patientId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/reset-password' | '/espace' | '/mfa'
+  to:
+    | '/'
+    | '/auth'
+    | '/reset-password'
+    | '/espace'
+    | '/mfa'
+    | '/patient'
+    | '/praticien'
+    | '/rendez-vous'
+    | '/dossier/$patientId'
   id:
     | '__root__'
     | '/'
@@ -82,6 +137,10 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/espace'
     | '/_authenticated/mfa'
+    | '/_authenticated/patient'
+    | '/_authenticated/praticien'
+    | '/_authenticated/rendez-vous'
+    | '/_authenticated/dossier/$patientId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -135,17 +194,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMfaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/patient': {
+      id: '/_authenticated/patient'
+      path: '/patient'
+      fullPath: '/patient'
+      preLoaderRoute: typeof AuthenticatedPatientRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/praticien': {
+      id: '/_authenticated/praticien'
+      path: '/praticien'
+      fullPath: '/praticien'
+      preLoaderRoute: typeof AuthenticatedPraticienRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/rendez-vous': {
+      id: '/_authenticated/rendez-vous'
+      path: '/rendez-vous'
+      fullPath: '/rendez-vous'
+      preLoaderRoute: typeof AuthenticatedRendezVousRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dossier/$patientId': {
+      id: '/_authenticated/dossier/$patientId'
+      path: '/dossier/$patientId'
+      fullPath: '/dossier/$patientId'
+      preLoaderRoute: typeof AuthenticatedDossierPatientIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedEspaceRoute: typeof AuthenticatedEspaceRoute
   AuthenticatedMfaRoute: typeof AuthenticatedMfaRoute
+  AuthenticatedPatientRoute: typeof AuthenticatedPatientRoute
+  AuthenticatedPraticienRoute: typeof AuthenticatedPraticienRoute
+  AuthenticatedRendezVousRoute: typeof AuthenticatedRendezVousRoute
+  AuthenticatedDossierPatientIdRoute: typeof AuthenticatedDossierPatientIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedEspaceRoute: AuthenticatedEspaceRoute,
   AuthenticatedMfaRoute: AuthenticatedMfaRoute,
+  AuthenticatedPatientRoute: AuthenticatedPatientRoute,
+  AuthenticatedPraticienRoute: AuthenticatedPraticienRoute,
+  AuthenticatedRendezVousRoute: AuthenticatedRendezVousRoute,
+  AuthenticatedDossierPatientIdRoute: AuthenticatedDossierPatientIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
