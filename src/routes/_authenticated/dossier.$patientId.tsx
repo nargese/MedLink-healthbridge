@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/dossier/$patientId")({
-  validateSearch: (s: Record<string, unknown>): { rdv?: string } => ({ rdv: typeof s["rdv"] === "string" ? (s["rdv"] as string) : undefined }),
+  validateSearch: (s: Record<string, unknown>): { rdv?: string | undefined } => ({ rdv: typeof s["rdv"] === "string" ? (s["rdv"] as string) : undefined }),
   head: () => ({ meta: [{ title: "Dossier patient — MedLink" }, { name: "robots", content: "noindex" }] }),
   component: () => (
     <AppShell require="praticien">

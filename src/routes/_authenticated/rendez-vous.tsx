@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/rendez-vous")({
-  validateSearch: (s: Record<string, unknown>): { reporter?: string } => ({ reporter: typeof s["reporter"] === "string" ? (s["reporter"] as string) : undefined }),
+  validateSearch: (s: Record<string, unknown>): { reporter?: string | undefined } => ({ reporter: typeof s["reporter"] === "string" ? (s["reporter"] as string) : undefined }),
   head: () => ({ meta: [{ title: "Prendre rendez-vous — MedLink" }, { name: "robots", content: "noindex" }] }),
   component: () => (
     <AppShell require="patient">
