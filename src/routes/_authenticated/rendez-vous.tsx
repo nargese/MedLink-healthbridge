@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/rendez-vous")({
-  validateSearch: (s: Record<string, unknown>) => ({ reporter: typeof s.reporter === "string" ? s.reporter : undefined }),
+  validateSearch: (s: Record<string, unknown>): { reporter?: string } => ({ reporter: typeof s["reporter"] === "string" ? (s["reporter"] as string) : undefined }),
   head: () => ({ meta: [{ title: "Prendre rendez-vous — MedLink" }, { name: "robots", content: "noindex" }] }),
   component: () => (
     <AppShell require="patient">
@@ -44,7 +44,7 @@ function Booking() {
   const [specialite, setSpecialite] = useState<string>("");
   const [clinique, setClinique] = useState<string>("");
   const [praticien, setPraticien] = useState<string>("");
-  const [jour, setJour] = useState(nextDays(1)[0]);
+  const [jour, setJour] = useState<string>(nextDays(1)[0]!);
   const [motif, setMotif] = useState("");
   const [busy, setBusy] = useState(false);
   const days = useMemo(() => nextDays(14), []);
@@ -69,7 +69,7 @@ function Booking() {
     queryKey: ["pris", praticien, jour],
     enabled: !!praticien,
     queryFn: async () => {
-      const { data } = await supabase.rpc("creneaux_pris", { _praticien: praticien, _jour: jour });
+      const { data } = await supabase.rpc("creneaux_pris", { _praticien: praticien, _jour: jour! });
       return new Set((data ?? []).map((t: string) => new Date(t).getTime()));
     },
   });
