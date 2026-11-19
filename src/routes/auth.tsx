@@ -1,5 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useServerFn } from '@tanstack/react-start';
+import { loginAccount } from '@/lib/login.functions';
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { passwordIssues } from "@/lib/auth";
@@ -17,6 +19,8 @@ export const Route = createFileRoute("/auth")({
       { name: "description", content: "Connectez-vous ou créez votre compte patient MedLink." },
       { property: "og:title", content: "Connexion — MedLink" },
       { property: "og:description", content: "Accès sécurisé à votre espace MedLink." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AuthPage,
@@ -24,6 +28,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const connect = useServerFn(loginAccount);
   const [busy, setBusy] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,18 +39,13 @@ function AuthPage() {
     e.preventDefault();
     setBusy(true);
     try {
-      const { data: locked } = await supabase.rpc("login_locked", { _email: email });
-      if (locked) {
-        toast.error("Compte temporairement verrouillé après 5 tentatives échouées. Réessayez dans 15 minutes.");
-        return;
-      }
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      await supabase.rpc("record_login", { _email: email, _success: !error });
-      if (error) {
-        toast.error("Identifiants incorrects.");
-        return;
-      }
+      const result = await connect({ data: { email, password } });
+      if (!result.session) return toast.error(result.message);
+      const { error } = await supabase.auth.setSession(result.session);
+      if (error) return toast.error('Connexion impossible.');
       navigate({ to: "/espace", replace: true });
+    } catch {
+      toast.error('Connexion indisponible. Réessayez.');
     } finally {
       setBusy(false);
     }
@@ -59,7 +59,7 @@ function AuthPage() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: window.location.origin + "/espace", data: { full_name: fullName } },
+      options: { emailRedirectTo: window.location.origin + "/auth", data: { full_name: fullName } },
     });
     setBusy(false);
     if (error) return toast.error(error.message.includes("pwned") || error.message.toLowerCase().includes("weak") ? "Ce mot de passe a fuité publiquement, choisissez-en un autre." : error.message);
@@ -70,8 +70,9 @@ function AuthPage() {
   const forgot = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + "/reset-password" });
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + "/reset-password" });
     setBusy(false);
+    if (error) return toast.error('Le lien ne peut pas être envoyé actuellement. Réessayez.');
     toast.success("Si un compte existe, un lien de réinitialisation a été envoyé.");
     setMode("login");
   };
@@ -84,7 +85,7 @@ function AuthPage() {
         <span className="font-display text-3xl">MedLink</span>
         <div>
           <h1 className="text-5xl leading-tight">Vos soins, <em>en toute confidentialité.</em></h1>
-          <p className="mt-4 max-w-md opacity-80">Données hébergées en Tunisie, chiffrées et accessibles uniquement à vous et à votre praticien traitant.</p>
+          <p className="mt-4 max-w-md opacity-80">Un accès personnel à vos rendez-vous et à vos documents médicaux.</p>
         </div>
         <p className="text-sm opacity-60">Sousse · Sfax · Tunis</p>
       </div>

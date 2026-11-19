@@ -1,3 +1,4 @@
+import { pageMeta } from '@/lib/page-meta';
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -9,7 +10,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { Logo } from "@/components/AppShell";
 
 export const Route = createFileRoute("/_authenticated/mfa")({
-  head: () => ({ meta: [{ title: "Double authentification — MedLink" }, { name: "robots", content: "noindex" }] }),
+  head: () => pageMeta('Double authentification — MedLink', 'Vérification renforcée des accès professionnels MedLink.'),
   component: Mfa,
 });
 

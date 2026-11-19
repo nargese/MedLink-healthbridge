@@ -1,3 +1,4 @@
+import { pageMeta } from '@/lib/page-meta';
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -12,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export const Route = createFileRoute("/_authenticated/rendez-vous")({
   validateSearch: (s: Record<string, unknown>): { reporter?: string | undefined } => ({ reporter: typeof s["reporter"] === "string" ? (s["reporter"] as string) : undefined }),
-  head: () => ({ meta: [{ title: "Prendre rendez-vous — MedLink" }, { name: "robots", content: "noindex" }] }),
+  head: () => pageMeta('Prendre rendez-vous — MedLink', 'Réservation et report des consultations MedLink.'),
   component: () => (
     <AppShell require="patient">
       <Booking />
@@ -44,7 +45,7 @@ function Booking() {
   const [specialite, setSpecialite] = useState<string>("");
   const [clinique, setClinique] = useState<string>("");
   const [praticien, setPraticien] = useState<string>("");
-  const [jour, setJour] = useState<string>(nextDays(1)[0]!);
+  const [jour, setJour] = useState<string>(nextDays(1)[0] ?? "");
   const [motif, setMotif] = useState("");
   const [busy, setBusy] = useState(false);
   const days = useMemo(() => nextDays(14), []);
@@ -69,17 +70,17 @@ function Booking() {
     queryKey: ["pris", praticien, jour],
     enabled: !!praticien,
     queryFn: async () => {
-      const { data } = await supabase.rpc("creneaux_pris", { _praticien: praticien, _jour: jour! });
+      const { data } = await supabase.rpc("creneaux_pris", { _praticien: praticien, _jour: jour });
       return new Set((data ?? []).map((t: string) => new Date(t).getTime()));
     },
   });
 
   const book = async (slot: string) => {
-    if (!praticien || !clinique) return toast.error("Choisissez une clinique et un praticien.");
+    if (!me?.user || !praticien || !clinique) return toast.error("Choisissez une clinique et un praticien.");
     setBusy(true);
     const debut = new Date(`${jour}T${slot}:00+01:00`).toISOString();
     const { error } = await supabase.from("rendez_vous").insert({
-      patient_id: me!.user.id, praticien_id: praticien, clinique_id: clinique, debut, motif: motif.slice(0, 300) || null,
+      patient_id: me.user.id, praticien_id: praticien, clinique_id: clinique, debut, motif: motif.slice(0, 300) || null,
     });
     if (error) {
       setBusy(false);

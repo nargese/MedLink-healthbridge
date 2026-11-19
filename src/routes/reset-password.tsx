@@ -14,6 +14,8 @@ export const Route = createFileRoute("/reset-password")({
       { name: "description", content: "Définissez un nouveau mot de passe pour votre compte MedLink." },
       { property: "og:title", content: "Nouveau mot de passe — MedLink" },
       { property: "og:description", content: "Réinitialisation du mot de passe MedLink." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Reset,

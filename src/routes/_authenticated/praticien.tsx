@@ -1,3 +1,4 @@
+import { pageMeta } from '@/lib/page-meta';
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -8,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/praticien")({
-  head: () => ({ meta: [{ title: "Agenda praticien — MedLink" }, { name: "robots", content: "noindex" }] }),
+  head: () => pageMeta('Agenda praticien — MedLink', 'Agenda des consultations dans les cliniques MedLink.'),
   component: () => (
     <AppShell require="praticien">
       <Agenda />
@@ -25,11 +26,12 @@ function Agenda() {
     queryKey: ["agenda", pid],
     enabled: !!pid,
     queryFn: async () => {
+      if (!pid) return [];
       const since = new Date(Date.now() - 7 * 864e5).toISOString();
       const { data, error } = await supabase
         .from("rendez_vous")
         .select("*, cliniques(nom, ville)")
-        .eq("praticien_id", pid!)
+        .eq("praticien_id", pid)
         .gte("debut", since)
         .order("debut");
       if (error) throw error;

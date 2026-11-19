@@ -22,7 +22,8 @@ function Notifications({ userId }: { userId: string }) {
   const { data = [] } = useQuery({
     queryKey: ["notifications", userId],
     queryFn: async () => {
-      const { data } = await supabase.from("notifications").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(20);
+      const { data, error } = await supabase.from("notifications").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(20);
+      if (error) throw error;
       return data ?? [];
     },
     refetchInterval: 30000,

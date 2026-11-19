@@ -74,7 +74,6 @@ export const createAccount = createServerFn({ method: "POST" })
           await supabaseAdmin.from("praticien_cliniques").insert(data.cliniques.map((c) => ({ praticien_id: p.id, clinique_id: c })));
       }
     }
-    await supabaseAdmin.from("audit_logs").insert({ actor_id: context.userId, action: "compte_cree_admin", cible: uid, details: { role: data.role } });
     return { id: uid };
   });
 
@@ -87,6 +86,5 @@ export const setRole = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await supabaseAdmin.from("user_roles").delete().eq("user_id", data.user_id);
     await supabaseAdmin.from("user_roles").insert({ user_id: data.user_id, role: data.role });
-    await supabaseAdmin.from("audit_logs").insert({ actor_id: context.userId, action: "role_modifie", cible: data.user_id, details: { role: data.role } });
     return { ok: true };
   });

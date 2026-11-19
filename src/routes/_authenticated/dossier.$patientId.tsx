@@ -1,6 +1,7 @@
+import { pageMeta } from '@/lib/page-meta';
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export const Route = createFileRoute("/_authenticated/dossier/$patientId")({
   validateSearch: (s: Record<string, unknown>): { rdv?: string | undefined } => ({ rdv: typeof s["rdv"] === "string" ? (s["rdv"] as string) : undefined }),
-  head: () => ({ meta: [{ title: "Dossier patient — MedLink" }, { name: "robots", content: "noindex" }] }),
+  head: () => pageMeta('Dossier patient — MedLink', 'Consultation sécurisée et journalisée du dossier médical MedLink.'),
   component: () => (
     <AppShell require="praticien">
       <Dossier />
@@ -31,27 +32,30 @@ function Dossier() {
   const [type, setType] = useState<"compte_rendu" | "resultat" | "ordonnance">("compte_rendu");
   const [contenu, setContenu] = useState("");
 
-  useEffect(() => {
-    supabase.rpc("log_access", { _action: "dossier_consulte", _cible: patientId });
-  }, [patientId]);
-
   const q = useQuery({
     queryKey: ["dossier", patientId],
     queryFn: async () => {
+      const pid = me?.praticien?.id;
+      if (!pid) throw new Error('Fiche praticien manquante.');
+      const logged = await supabase.rpc('log_access', { _action: 'dossier_consulte', _cible: patientId });
+      if (logged.error) throw logged.error;
       const [p, d, r] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", patientId).maybeSingle(),
         supabase.from("documents").select("*, praticiens(nom)").eq("patient_id", patientId).order("created_at", { ascending: false }),
-        supabase.from("rendez_vous").select("*, cliniques(nom)").eq("patient_id", patientId).eq("praticien_id", me!.praticien!.id).order("debut", { ascending: false }),
+        supabase.from("rendez_vous").select("*, cliniques(nom)").eq("patient_id", patientId).eq("praticien_id", pid).order("debut", { ascending: false }),
       ]);
+      if (p.error || d.error || r.error) throw p.error || d.error || r.error;
       return { profile: p.data, docs: d.data ?? [], rdvs: r.data ?? [] };
     },
   });
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
+    const pid = me?.praticien?.id;
+    if (!pid) return toast.error('Fiche praticien manquante.');
     if (contenu.trim().length < 5) return toast.error("Le contenu est trop court.");
     const { error } = await supabase.from("documents").insert({
-      patient_id: patientId, praticien_id: me!.praticien!.id, rendez_vous_id: rdv ?? null, type, titre: titre.slice(0, 150), contenu: contenu.slice(0, 10000),
+      patient_id: patientId, praticien_id: pid, rendez_vous_id: rdv ?? null, type, titre: titre.slice(0, 150), contenu: contenu.slice(0, 10000),
     });
     if (error) return toast.error("Accès refusé ou erreur d'enregistrement.");
     if (rdv) await supabase.from("rendez_vous").update({ statut: "termine" }).eq("id", rdv);

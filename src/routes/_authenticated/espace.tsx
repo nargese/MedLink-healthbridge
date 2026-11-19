@@ -1,8 +1,9 @@
+import { pageMeta } from '@/lib/page-meta';
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { homeFor, useMe } from "@/lib/auth";
 
 export const Route = createFileRoute("/_authenticated/espace")({
-  head: () => ({ meta: [{ title: "Mon espace — MedLink" }, { name: "robots", content: "noindex" }] }),
+  head: () => pageMeta('Mon espace — MedLink', 'Accès à votre espace personnel MedLink.'),
   component: Espace,
 });
 

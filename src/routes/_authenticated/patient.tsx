@@ -1,3 +1,4 @@
+import { pageMeta } from '@/lib/page-meta';
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -10,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_authenticated/patient")({
-  head: () => ({ meta: [{ title: "Mon espace patient — MedLink" }, { name: "robots", content: "noindex" }] }),
+  head: () => pageMeta('Mon espace patient — MedLink', 'Vos rendez-vous et documents médicaux MedLink.'),
   component: () => (
     <AppShell require="patient">
       <Patient />
@@ -21,11 +22,13 @@ export const Route = createFileRoute("/_authenticated/patient")({
 function Patient() {
   const { data: me } = useMe();
   const qc = useQueryClient();
-  const uid = me!.user.id;
+  const uid = me?.user.id;
 
   const rdv = useQuery({
     queryKey: ["rdv-patient", uid],
+    enabled: !!uid,
     queryFn: async () => {
+      if (!uid) return [];
       const { data, error } = await supabase
         .from("rendez_vous")
         .select("*, praticiens(nom, specialite), cliniques(nom, ville)")
@@ -37,7 +40,11 @@ function Patient() {
   });
   const docs = useQuery({
     queryKey: ["docs-patient", uid],
+    enabled: !!uid,
     queryFn: async () => {
+      if (!uid) return [];
+      const audit = await supabase.rpc("log_access", { _action: "document_consulte", _cible: uid });
+      if (audit.error) throw audit.error;
       const { data, error } = await supabase.from("documents").select("*, praticiens(nom)").eq("patient_id", uid).order("created_at", { ascending: false });
       if (error) throw error;
       return data;
@@ -104,13 +111,13 @@ function Patient() {
             {(docs.data ?? []).map((d) => (
               <Dialog key={d.id}>
                 <DialogTrigger asChild>
-                  <button className="flex w-full items-start gap-3 rounded-xl border bg-card p-4 text-left hover:border-primary">
+                  <Button variant="outline" className="h-auto w-full items-start justify-start gap-3 whitespace-normal p-4 text-left">
                     <FileText className="mt-0.5 h-5 w-5 text-primary" />
                     <div>
                       <p className="font-medium">{d.titre}</p>
                       <p className="text-xs text-muted-foreground">{d.praticiens?.nom} · {new Date(d.created_at).toLocaleDateString("fr-FR")}</p>
                     </div>
-                  </button>
+                  </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader><DialogTitle className="font-display text-2xl font-normal">{d.titre}</DialogTitle></DialogHeader>

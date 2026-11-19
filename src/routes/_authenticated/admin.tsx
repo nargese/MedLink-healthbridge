@@ -4,6 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Download } from "lucide-react";
+import { CallTracking } from '@/components/CallTracking';
+import { pageMeta } from '@/lib/page-meta';
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell, PageTitle } from "@/components/AppShell";
 import { fmtDate, passwordIssues } from "@/lib/auth";
@@ -16,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => ({ meta: [{ title: "Back-office — MedLink" }, { name: "robots", content: "noindex" }] }),
+  head: () => pageMeta('Back-office — MedLink', 'Supervision de l’activité, des appels, des comptes et des accès MedLink.'),
   component: () => (
     <AppShell require="admin">
       <Admin />
@@ -33,10 +35,12 @@ function Admin() {
           <TabsTrigger value="activite">Activité</TabsTrigger>
           <TabsTrigger value="comptes">Comptes</TabsTrigger>
           <TabsTrigger value="audit">Journal d'audit</TabsTrigger>
+          <TabsTrigger value="appels">Appels</TabsTrigger>
         </TabsList>
         <TabsContent value="activite" className="mt-6"><Activite /></TabsContent>
         <TabsContent value="comptes" className="mt-6"><Comptes /></TabsContent>
         <TabsContent value="audit" className="mt-6"><Audit /></TabsContent>
+        <TabsContent value="appels" className="mt-6"><CallTracking /></TabsContent>
       </Tabs>
     </>
   );
@@ -57,14 +61,16 @@ function Activite() {
     if (r.statut === "annule") k.annule += Number(r.total);
     return acc;
   }, {});
-  const exportCsv = () => {
+  const exportCsv = async () => {
+    const { error } = await supabase.rpc('log_access', { _action: 'export_stats', _cible: 'stats_anonymes' });
+    if (error) return toast.error('Export refusé.');
     const rows = [["mois", "clinique", "specialite", "statut", "total"], ...data.map((r) => [r.mois, r.clinique, r.specialite, r.statut, String(r.total)])];
-    const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/^[=+@-]/, "'").replace(/"/g, '""')}"`).join(",")).join("\n");
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
     a.download = `medlink-stats-anonymes-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
-    supabase.rpc("log_access", { _action: "export_stats", _cible: "stats_anonymes" });
+    URL.revokeObjectURL(a.href);
   };
   return (
     <div className="space-y-6">

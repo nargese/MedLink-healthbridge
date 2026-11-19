@@ -11,6 +11,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Prenez rendez-vous dans les cliniques MedLink de Sousse, Sfax et Tunis et consultez vos résultats en toute confidentialité." },
       { property: "og:title", content: "MedLink — Portail patient sécurisé" },
       { property: "og:description", content: "Rendez-vous en ligne et résultats médicaux sécurisés dans 3 cliniques en Tunisie." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Index,
@@ -19,7 +21,7 @@ export const Route = createFileRoute("/")({
 const FEATURES = [
   { icon: CalendarCheck, t: "Rendez-vous en ligne", d: "Choisissez un créneau, annulez ou reportez sans appeler le standard." },
   { icon: FileLock2, t: "Résultats confidentiels", d: "Vos comptes-rendus et résultats, visibles uniquement par vous et votre praticien." },
-  { icon: Stethoscope, t: "40 praticiens", d: "Médecine générale, cardiologie et pédiatrie sur 3 sites." },
+  { icon: Stethoscope, t: "Praticiens multi-sites", d: "Médecine générale, cardiologie et pédiatrie sur 3 sites." },
   { icon: ShieldCheck, t: "Sécurité renforcée", d: "Double authentification, chiffrement et traçabilité de chaque accès." },
 ];
 
@@ -55,7 +57,7 @@ function Index() {
         ))}
       </section>
       <footer className="border-t py-8 text-center text-sm text-muted-foreground">
-        © MedLink — Données de santé hébergées et protégées conformément à la loi INPDP. Portail disponible 6h–22h.
+        © MedLink — Portail de santé · Plage de service prévue : 6h–22h, heure de Tunis.
       </footer>
     </div>
   );

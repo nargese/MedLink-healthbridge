@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      appels_mensuels: {
+        Row: {
+          appels: number
+          clinique_id: string
+          created_at: string
+          id: string
+          mois: string
+          reference_appels: number
+        }
+        Insert: {
+          appels: number
+          clinique_id: string
+          created_at?: string
+          id?: string
+          mois: string
+          reference_appels: number
+        }
+        Update: {
+          appels?: number
+          clinique_id?: string
+          created_at?: string
+          id?: string
+          mois?: string
+          reference_appels?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appels_mensuels_clinique_id_fkey"
+            columns: ["clinique_id"]
+            isOneToOne: false
+            referencedRelation: "cliniques"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: string
@@ -133,27 +168,41 @@ export type Database = {
       }
       notifications: {
         Row: {
+          categorie: string
           created_at: string
           id: string
           lu: boolean
           message: string
+          rendez_vous_id: string | null
           user_id: string
         }
         Insert: {
+          categorie?: string
           created_at?: string
           id?: string
           lu?: boolean
           message: string
+          rendez_vous_id?: string | null
           user_id: string
         }
         Update: {
+          categorie?: string
           created_at?: string
           id?: string
           lu?: boolean
           message?: string
+          rendez_vous_id?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "notifications_rendez_vous_id_fkey"
+            columns: ["rendez_vous_id"]
+            isOneToOne: false
+            referencedRelation: "rendez_vous"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       praticien_cliniques: {
         Row: {
@@ -308,6 +357,7 @@ export type Database = {
         Args: { _jour: string; _praticien: string }
         Returns: string[]
       }
+      dispatch_rappels: { Args: { _now?: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

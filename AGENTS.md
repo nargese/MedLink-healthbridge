@@ -13,3 +13,7 @@
 - Access control lives in database RLS (patient = own rows, praticien = own patients with MFA aal2, admin = aal2); UI gates are convenience only.
 - Admin account/role management goes through server functions in src/lib/admin.functions.ts that verify admin role + aal2 before using the admin client.
 - Audit entries are written by DB triggers or the `log_access` RPC, never by direct inserts from the browser.
+- Public password login goes through login.functions.ts; attempt tracking is service-role-only so browser callers cannot reset failures.
+- Scheduled appointment reminders are idempotent database notifications; email delivery requires a verified sender domain.
+- Call reduction is calculated from clinic-level monthly counts and a measured baseline, never estimated from bookings.
+- Public signup always creates a patient; administrative roles require authorized role management to prevent bootstrap privilege escalation.
