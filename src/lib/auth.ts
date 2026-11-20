@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-export type Role = "patient" | "praticien" | "admin";
+export type Role = "patient" | "praticien" | "admin" | "super_admin";
 
 /** Politique de mots de passe : 12 caractères min, majuscule, minuscule, chiffre, symbole. */
 export function passwordIssues(pw: string): string[] {
@@ -14,7 +14,7 @@ export function passwordIssues(pw: string): string[] {
   return issues;
 }
 
-export const STAFF_ROLES: Role[] = ["praticien", "admin"];
+export const STAFF_ROLES: Role[] = ["praticien", "admin", "super_admin"];
 
 export function useMe() {
   return useQuery({
@@ -41,7 +41,8 @@ export function useMe() {
   });
 }
 
-export function homeFor(roles: Role[]): "/admin" | "/praticien" | "/patient" {
+export function homeFor(roles: Role[]): "/super-admin" | "/admin" | "/praticien" | "/patient" {
+  if (roles.includes("super_admin")) return "/super-admin";
   if (roles.includes("admin")) return "/admin";
   if (roles.includes("praticien")) return "/praticien";
   return "/patient";

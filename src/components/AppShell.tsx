@@ -57,13 +57,14 @@ function Notifications({ userId }: { userId: string }) {
   );
 }
 
-const NAV: Record<Role, { to: "/patient" | "/rendez-vous" | "/praticien" | "/admin"; label: string }[]> = {
+const NAV: Record<Role, { to: "/patient" | "/rendez-vous" | "/praticien" | "/admin" | "/super-admin"; label: string }[]> = {
   patient: [
     { to: "/patient", label: "Mon espace" },
     { to: "/rendez-vous", label: "Prendre RDV" },
   ],
   praticien: [{ to: "/praticien", label: "Agenda" }],
   admin: [{ to: "/admin", label: "Back-office" }],
+  super_admin: [{ to: "/super-admin", label: "Super admin" }],
 };
 
 export function AppShell({ require, children }: { require: Role; children: ReactNode }) {

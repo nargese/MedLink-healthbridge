@@ -15,6 +15,20 @@
       "when": 1795092627003,
       "tag": "0001_medlink_security_reminders_calls",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795163883160,
+      "tag": "0002_add_super_admin_role",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795163895707,
+      "tag": "0003_super_admin_clinics",
+      "breakpoints": true
     }
   ]
 }

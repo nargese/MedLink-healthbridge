@@ -368,6 +368,7 @@ export type Database = {
       is_aal2: { Args: never; Returns: boolean }
       is_my_patient: { Args: { _patient: string }; Returns: boolean }
       is_staff_admin: { Args: never; Returns: boolean }
+      is_super_admin: { Args: never; Returns: boolean }
       log_access: {
         Args: { _action: string; _cible: string }
         Returns: undefined
@@ -390,7 +391,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "patient" | "praticien" | "admin"
+      app_role: "patient" | "praticien" | "admin" | "super_admin"
       doc_type: "resultat" | "compte_rendu" | "ordonnance"
       rdv_statut: "confirme" | "annule" | "termine"
     }
@@ -520,7 +521,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["patient", "praticien", "admin"],
+      app_role: ["patient", "praticien", "admin", "super_admin"],
       doc_type: ["resultat", "compte_rendu", "ordonnance"],
       rdv_statut: ["confirme", "annule", "termine"],
     },

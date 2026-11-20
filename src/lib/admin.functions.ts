@@ -4,7 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 async function assertAdmin(ctx: { supabase: any; userId: string; claims: any }) {
   if (ctx.claims?.aal !== "aal2") throw new Error("MFA requise");
-  const { data } = await ctx.supabase.rpc("has_role", { _user_id: ctx.userId, _role: "admin" });
+  const { data } = await ctx.supabase.rpc("has_role", { _user_id: ctx.userId, _role: "super_admin" });
   if (!data) throw new Error("Accès refusé");
 }
 
@@ -39,7 +39,7 @@ const staffSchema = z.object({
     .regex(/[0-9]/)
     .regex(/[^A-Za-z0-9]/),
   full_name: z.string().trim().min(2).max(100),
-  role: z.enum(["patient", "praticien", "admin"]),
+  role: z.enum(["patient", "praticien", "admin", "super_admin"]),
   praticien_id: z.string().uuid().optional(),
   specialite: z.string().trim().max(60).optional(),
   cliniques: z.array(z.string().uuid()).max(3).optional(),
@@ -79,7 +79,7 @@ export const createAccount = createServerFn({ method: "POST" })
 
 export const setRole = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({ user_id: z.string().uuid(), role: z.enum(["patient", "praticien", "admin"]) }).parse(d))
+  .inputValidator((d: unknown) => z.object({ user_id: z.string().uuid(), role: z.enum(["patient", "praticien", "admin", "super_admin"]) }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     if (data.user_id === context.userId) throw new Error("Vous ne pouvez pas modifier votre propre rôle.");

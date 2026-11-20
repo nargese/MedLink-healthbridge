@@ -17,3 +17,5 @@
 - Scheduled appointment reminders are idempotent database notifications; email delivery requires a verified sender domain.
 - Call reduction is calculated from clinic-level monthly counts and a measured baseline, never estimated from bookings.
 - Public signup always creates a patient; administrative roles require authorized role management to prevent bootstrap privilege escalation.
+
+- Super administrator role (separate from admin) owns account/role management and clinic CRUD; enforced by is_super_admin() (role + aal2) in RLS and server functions.

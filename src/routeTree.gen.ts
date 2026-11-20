@@ -19,6 +19,7 @@ import { Route as AuthenticatedMfaRouteImport } from './routes/_authenticated/mf
 import { Route as AuthenticatedPatientRouteImport } from './routes/_authenticated/patient'
 import { Route as AuthenticatedPraticienRouteImport } from './routes/_authenticated/praticien'
 import { Route as AuthenticatedRendezVousRouteImport } from './routes/_authenticated/rendez-vous'
+import { Route as AuthenticatedSuperAdminRouteImport } from './routes/_authenticated/super-admin'
 import { Route as AuthenticatedDossierPatientIdRouteImport } from './routes/_authenticated/dossier.$patientId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -70,6 +71,11 @@ const AuthenticatedRendezVousRoute = AuthenticatedRendezVousRouteImport.update({
   path: '/rendez-vous',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSuperAdminRoute = AuthenticatedSuperAdminRouteImport.update({
+  id: '/super-admin',
+  path: '/super-admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDossierPatientIdRoute =
   AuthenticatedDossierPatientIdRouteImport.update({
     id: '/dossier/$patientId',
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/patient': typeof AuthenticatedPatientRoute
   '/praticien': typeof AuthenticatedPraticienRoute
   '/rendez-vous': typeof AuthenticatedRendezVousRoute
+  '/super-admin': typeof AuthenticatedSuperAdminRoute
   '/dossier/$patientId': typeof AuthenticatedDossierPatientIdRoute
 }
 export interface FileRoutesByTo {
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/patient': typeof AuthenticatedPatientRoute
   '/praticien': typeof AuthenticatedPraticienRoute
   '/rendez-vous': typeof AuthenticatedRendezVousRoute
+  '/super-admin': typeof AuthenticatedSuperAdminRoute
   '/dossier/$patientId': typeof AuthenticatedDossierPatientIdRoute
 }
 export interface FileRoutesById {
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/_authenticated/patient': typeof AuthenticatedPatientRoute
   '/_authenticated/praticien': typeof AuthenticatedPraticienRoute
   '/_authenticated/rendez-vous': typeof AuthenticatedRendezVousRoute
+  '/_authenticated/super-admin': typeof AuthenticatedSuperAdminRoute
   '/_authenticated/dossier/$patientId': typeof AuthenticatedDossierPatientIdRoute
 }
 export interface FileRouteTypes {
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/patient'
     | '/praticien'
     | '/rendez-vous'
+    | '/super-admin'
     | '/dossier/$patientId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
     | '/patient'
     | '/praticien'
     | '/rendez-vous'
+    | '/super-admin'
     | '/dossier/$patientId'
   id:
     | '__root__'
@@ -152,6 +163,7 @@ export interface FileRouteTypes {
     | '/_authenticated/patient'
     | '/_authenticated/praticien'
     | '/_authenticated/rendez-vous'
+    | '/_authenticated/super-admin'
     | '/_authenticated/dossier/$patientId'
   fileRoutesById: FileRoutesById
 }
@@ -234,6 +246,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRendezVousRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/super-admin': {
+      id: '/_authenticated/super-admin'
+      path: '/super-admin'
+      fullPath: '/super-admin'
+      preLoaderRoute: typeof AuthenticatedSuperAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dossier/$patientId': {
       id: '/_authenticated/dossier/$patientId'
       path: '/dossier/$patientId'
@@ -251,6 +270,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPatientRoute: typeof AuthenticatedPatientRoute
   AuthenticatedPraticienRoute: typeof AuthenticatedPraticienRoute
   AuthenticatedRendezVousRoute: typeof AuthenticatedRendezVousRoute
+  AuthenticatedSuperAdminRoute: typeof AuthenticatedSuperAdminRoute
   AuthenticatedDossierPatientIdRoute: typeof AuthenticatedDossierPatientIdRoute
 }
 
@@ -261,6 +281,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPatientRoute: AuthenticatedPatientRoute,
   AuthenticatedPraticienRoute: AuthenticatedPraticienRoute,
   AuthenticatedRendezVousRoute: AuthenticatedRendezVousRoute,
+  AuthenticatedSuperAdminRoute: AuthenticatedSuperAdminRoute,
   AuthenticatedDossierPatientIdRoute: AuthenticatedDossierPatientIdRoute,
 }
 
